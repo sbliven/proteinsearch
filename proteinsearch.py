@@ -17,6 +17,32 @@ import esmre
 # From http://www.daimi.au.dk/~mailund/suffix_tree.html
 #from suffix_tree import GeneralisedSuffixTree
 
+def disambiguateRe(seq, addoriginal=True):
+    """disambiguate(string) -> string
+
+    returns a regular expression string replacing ambiguous residues (B,J,Z,X)
+    with their matching character sets.
+
+    If addoriginal is true (the default), also allow the ambiguous character to match.
+
+    Example:
+    disambiguate("ABERJF") => "A[BDN]ER[JIL]F"
+    """
+    regex = seq.upper()
+    stdaas = "ACDEFGHIKLMNPQRSTVWY"
+    if addoriginal:
+        regex = regex.replace("B","[BDN]")
+        regex = regex.replace("J","[JIL]")
+        regex = regex.replace("Z","[ZEQ]")
+        regex = regex.replace("B","[X%s]"%stdaas)
+    else:
+        regex = regex.replace("B","[DN]")
+        regex = regex.replace("J","[IL]")
+        regex = regex.replace("Z","[EQ]")
+        regex = regex.replace("B","[%s]"%stdaas)
+    return regex
+
+# work around bug in esmre parsing of regular expressions
 def disambiguate(seq, addoriginal=True,max_x=-1):
     """disambiguate(string) -> generator() of strings
 

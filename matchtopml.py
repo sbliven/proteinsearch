@@ -8,6 +8,8 @@ import os
 import optparse
 import re
 from cStringIO import StringIO
+from proteinsearch import disambiguateRe
+
 
 def outputPML(word,structures,prefix=None,out=sys.stdout):
     """outputPML(string, [(pdb,chain)...], handle) -> None
@@ -68,6 +70,8 @@ if __name__ == "__main__":
     parser = optparse.OptionParser( usage="usage: python %prog [options] matchfile word" )
     parser.add_option("-v","--verbose", help="Long messages",
         dest="verbose",default=False, action="store_true")
+    parser.add_option("--exact",help="Exact matches; don't disambiguate B,J,Z,and X",
+        dest="exactmatch",default=False,action="store_true")
     (options, args) = parser.parse_args()
 
     if len(args) != 2:
@@ -76,7 +80,11 @@ if __name__ == "__main__":
 
     matchfilename, word = args
 
-    wordre = re.compile("%s\s+(\w{4})\.(\w+)\s$" % word ,re.IGNORECASE)
+    if options.exactmatch:
+        wordexpr = word
+    else:
+        wordexpr = disambiguateRe(word)
+    wordre = re.compile("%s\s+(\w{4})\.(\w+)\s$" % wordexpr ,re.IGNORECASE)
 
     structures = []
     with open(matchfilename,'r') as matchfile:
