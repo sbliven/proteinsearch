@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """
 @author Spencer Bliven <sbliven@ucsd.edu>
 """
@@ -14,6 +14,9 @@ from proteinsearch import disambiguateRe
 def outputPML(word,structures,prefix=None,out=sys.stdout):
     """outputPML(string, [(pdb,chain)...], handle) -> None
     """
+    if len(structures) < 1:
+        raise ValueError("No structures found")
+
     out.write("delete *\n")
 
     if prefix is None:
@@ -36,6 +39,7 @@ def outputPML(word,structures,prefix=None,out=sys.stdout):
     # View
     out.write("""
 pretty_protein
+color_obj
 set cartoon_transparency, .5
 show sticks
 hide everything, elem h
@@ -46,7 +50,7 @@ set label_font_id, 10
 set label_font_id, 10
 #set label_size, -2
 set label_size, 56
-set label_position, (0,0,15) #labels in front of atoms
+set label_position, (0,0,5) #labels in front of atoms
 set cartoon_transparency, .5
 #set label_color, lightorange
 set label_color, black
@@ -84,7 +88,8 @@ if __name__ == "__main__":
         wordexpr = word
     else:
         wordexpr = disambiguateRe(word)
-    wordre = re.compile("%s\s+(\w{4})\.(\w+)\s$" % wordexpr ,re.IGNORECASE)
+
+    wordre = re.compile("%s\s+(\w{4})\.(\w+)\s$" % word,re.IGNORECASE)
 
     structures = []
     with open(matchfilename,'r') as matchfile:
@@ -96,5 +101,5 @@ if __name__ == "__main__":
                 pdb,chain = match.groups()
                 structures.append((pdb,chain))
 
-    outputPML(word,structures)
+    outputPML(wordexpr,structures,word)
 

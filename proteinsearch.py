@@ -34,12 +34,12 @@ def disambiguateRe(seq, addoriginal=True):
         regex = regex.replace("B","[BDN]")
         regex = regex.replace("J","[JIL]")
         regex = regex.replace("Z","[ZEQ]")
-        regex = regex.replace("B","[X%s]"%stdaas)
+        regex = regex.replace("X","[X%s]"%stdaas)
     else:
         regex = regex.replace("B","[DN]")
         regex = regex.replace("J","[IL]")
         regex = regex.replace("Z","[EQ]")
-        regex = regex.replace("B","[%s]"%stdaas)
+        regex = regex.replace("X","[%s]"%stdaas)
     return regex
 
 # work around bug in esmre parsing of regular expressions
