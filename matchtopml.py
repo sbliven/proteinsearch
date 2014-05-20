@@ -28,7 +28,7 @@ def outputPML(word,structures,prefix=None,out=sys.stdout):
     # Define selections
     for pdb,chain in structures:
         #out.write("create {0}.{1}, {0} and chain {1}\n".format(pdb,chain) )
-        out.write("findseq {0}, {1}{2}, {3}_{1}{2}, firstOnly=1\n".format(word,pdb,chain,prefix))
+        out.write("findseq {0}, {1}{2}, {3}_{1}{2}, 1, firstOnly=1\n".format(word,pdb,chain,prefix))
     selections = ["{0}_{1}{2}".format(prefix,pdb,chain) for pdb,chain in structures]
     out.write("select %s, %s\n" % (prefix, " ".join(selections) ) )
 
