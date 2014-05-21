@@ -10,7 +10,10 @@ import optparse
 #from Bio.Seq import Seq
 #from Bio import motifs
 #from Bio.Alphabet.IUPAC import ExtendedIUPACProtein
-from progressbar import ProgressBar,Percentage,Bar
+try:
+    import progressbar
+except ImportError:
+    sys.stderr.write("Warning: You don't seem to have progressbar installed. Install it or use -q\n")
 
 import esmre
 
@@ -154,11 +157,11 @@ if __name__ == "__main__":
     parser = optparse.OptionParser( usage="usage: python %prog [options] vocab sequences" )
     parser.add_option("-v","--verbose", help="Long messages",
         dest="verbose",default=False, action="store_true")
-    parser.add_option("-l","--min_len",help="Minimum word length",
+    parser.add_option("-l","--min_len",help="Minimum word length (default 5)",
         dest="min_len",default=5, type="int")
-    parser.add_option("-m","--matches",help="Output file for matches",
+    parser.add_option("-m","--matches",help="Output file for matches, or '-' for stdout",
         dest="matchfile",default=None)
-    parser.add_option("-c","--counts", help="Output file for counts",
+    parser.add_option("-c","--counts", help="Output file for counts, or '-' for stdout",
         dest="countfile",default=None)
     parser.add_option("-q","--no-progress",help="Display progress bar",
         dest="progress",default=True,action="store_false")
@@ -186,9 +189,9 @@ if __name__ == "__main__":
 
     with open(vocabfilename,'r') as vocabfile:
         if options.progress:
-            widgets=['Reading Vocab       ',Percentage(),Bar()]
+            widgets=['Reading Vocab       ',progressBar.Percentage(),progressBar.Bar()]
             size = os.stat(vocabfilename).st_size or 1
-            pbar = ProgressBar(widgets=widgets,maxval=size).start()
+            pbar = progressBar.ProgressBar(widgets=widgets,maxval=size).start()
 
         #vocabulary = [line.strip().upper() for line in vocabfile if len(line.strip())>=options.min_len]
         for line in vocabfile:
@@ -223,7 +226,7 @@ if __name__ == "__main__":
             matchfile = sys.stdout
         else:
             matchfile = open(options.matchfile,'w')
-            matchfile.write("Word\tPDB.Chain")
+            matchfile.write("Word\tPDB.Chain\n")
 
     countfile = None
     if options.countfile:
@@ -237,9 +240,9 @@ if __name__ == "__main__":
     with open(sequencesfilename,'r') as sequencesfile:
 
         if options.progress:
-            widgets=['Finding matches     ',Percentage(),Bar()]
+            widgets=['Finding matches     ',progressBar.Percentage(),progressBar.Bar()]
             size = os.stat(sequencesfilename).st_size or 1
-            pbar = ProgressBar(widgets=widgets,maxval=size).start()
+            pbar = progressBar.ProgressBar(widgets=widgets,maxval=size).start()
 
         headerline = sequencesfile.readline()
         line_num = 2
@@ -287,9 +290,9 @@ if __name__ == "__main__":
     # Output counts
     if countfile is not None:
         if options.progress:
-            widgets=['Writing counts      ',Percentage(),Bar()]
+            widgets=['Writing counts      ',progressBar.Percentage(),progressBar.Bar()]
             size = len(found_words)
-            pbar = ProgressBar(widgets=widgets,maxval=max(size,1)).start()
+            pbar = progressBar.ProgressBar(widgets=widgets,maxval=max(size,1)).start()
             i = 0
 
         word_counts = found_words.items()
